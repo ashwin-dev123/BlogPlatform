@@ -20,13 +20,23 @@ namespace BlogPlatform.Domain.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        
+        public Guid? ParentCommentId { get; set; }
+
+        public Comment? ParentComment { get; set; }
+
+        public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+
+
         private Comment() { }
 
-        public Comment(string content, Guid postId, Guid userId)
+        public Comment(string content, Guid postId, Guid userId, Guid? parentCommentId = null)
         {
             Content = content;
             PostId = postId;
             UserId = userId;
+            ParentCommentId = parentCommentId;
+
         }
     }
 
