@@ -18,6 +18,10 @@ namespace BlogPlatform.Application.DTOs
 
         public DateTime CreatedAt { get ; set; }
 
+        public Guid? ParentCommentId { get; set; }
+
+        public List<CommentDto> Replies { get; set; } = new();
+
         public string AuthorUsername { get; set; }
 
     }

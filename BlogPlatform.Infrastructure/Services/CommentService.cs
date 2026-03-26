@@ -33,11 +33,14 @@ namespace BlogPlatform.Infrastructure.Services
                     PostId = comment.PostId,
                     UserId = comment.UserId,
                     CreatedAt = comment.CreatedAt,
+                    ParentCommentId = comment.ParentCommentId,
                     AuthorUsername = _context.Users.FirstOrDefault(u => u.Id == comment.UserId).Username
                 });
             }
 
-            return result;
+            var commentTree = BuildTree(result);
+
+            return commentTree;
         }
 
         public async Task<List<CommentDto>> GetAllAsyncByUserId(Guid userId)
@@ -69,7 +72,7 @@ namespace BlogPlatform.Infrastructure.Services
                 throw new Exception("Post not found");
             }
 
-            var comment = new Comment(dto.Content, dto.PostId, userId);
+            var comment = new Comment(dto.Content, dto.PostId, userId, dto.ParentCommentId);
             
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
@@ -81,7 +84,8 @@ namespace BlogPlatform.Infrastructure.Services
                 PostId = comment.PostId,
                 UserId = comment.UserId,
                 CreatedAt = comment.CreatedAt,
-                AuthorUsername = (await _context.Users.FindAsync(comment.UserId))?.Username
+                AuthorUsername = (await _context.Users.FindAsync(comment.UserId))?.Username,
+                ParentCommentId = comment.ParentCommentId
             };
 
             return commentDto;
@@ -132,6 +136,33 @@ namespace BlogPlatform.Infrastructure.Services
             return true;
         }
 
+        public List<CommentDto> BuildTree(List<CommentDto> comments)
+        {
+            var map = new Dictionary<Guid, CommentDto>();
+
+            // Step 1: Put all comments in dictionary
+            foreach (var c in comments)
+            {
+                map[c.Id] = c;
+            }
+
+            var roots = new List<CommentDto>();
+
+            // Step 2: Build relationships
+            foreach (var c in comments)
+            {
+                if (c.ParentCommentId == null)
+                {
+                    roots.Add(c); // top-level comment
+                }
+                else
+                {
+                    map[c.ParentCommentId.Value].Replies.Add(c); // attach to parent
+                }
+            }
+
+            return roots;
+        }
 
     }
 }
