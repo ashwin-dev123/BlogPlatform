@@ -22,6 +22,7 @@ namespace BlogPlatform.Infrastructure.Services
 
         public async Task<List<CommentDto>> GetAllAsyncByPostId(Guid postId)
         {
+
             var comments = await _context.Comments.Where(c => c.PostId == postId).ToListAsync();
             List<CommentDto> result = new List<CommentDto>();   
             foreach (var comment in comments)
