@@ -13,5 +13,7 @@ namespace BlogPlatform.Application.Interfaces
 
         Task<UserDto?> RegisterAsync(CreateUserDto dto);
 
+        Task<AuthResponseDto?> GoogleLoginAsync(string token);
+
     }
 }

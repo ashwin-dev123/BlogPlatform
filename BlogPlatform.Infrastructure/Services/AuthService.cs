@@ -2,6 +2,7 @@
 using BlogPlatform.Application.Interfaces;
 using BlogPlatform.Domain.Entities;
 using BlogPlatform.Infrastructure.Data;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -41,6 +42,49 @@ public class AuthService : IAuthService
             Username = user.Username,
             Email = user.Email
         };
+    }
+
+    public async Task<AuthResponseDto?> GoogleLoginAsync(string token)
+    {
+        try
+        {
+            // 🔹 1. Validate Google token
+            var payload = await GoogleJsonWebSignature.ValidateAsync(token);
+
+            // 🔹 2. Check if user exists
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == payload.Email);
+
+            // 🔹 3. Create user if not exists
+            if (user == null)
+            {
+                user = new User(
+                    payload.Name,          // Username
+                    payload.Email,
+                    ""                     // No password for Google users
+                );
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+
+            // 🔹 4. Generate JWT (reuse your existing method)
+            var jwt = GenerateJwtToken(user);
+
+            // 🔹 5. Return same response structure
+            return new AuthResponseDto
+            {
+                Token = jwt,
+                Expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
+                UserId = user.Id,
+                Username = user.Username,
+                Email = user.Email
+            };
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public async Task<UserDto?> RegisterAsync(CreateUserDto dto)

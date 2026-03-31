@@ -27,6 +27,17 @@ namespace BlogPlatform.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("google")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleDto dto)
+        {
+            var result = await _authService.GoogleLoginAsync(dto.Token);
+
+            if (result == null)
+                return Unauthorized("Google login failed");
+
+            return Ok(result);
+        }
+
         // REGISTER
         [HttpPost("register")]
         public async Task<IActionResult> Register(CreateUserDto dto)
