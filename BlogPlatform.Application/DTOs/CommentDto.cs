@@ -20,7 +20,7 @@ namespace BlogPlatform.Application.DTOs
 
         public Guid? ParentCommentId { get; set; }
 
-        public List<CommentDto> Replies { get; set; } = new();
+        public List<CommentDto> Replies { get; set; }
 
         public string AuthorUsername { get; set; }
 

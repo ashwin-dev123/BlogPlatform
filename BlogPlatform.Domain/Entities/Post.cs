@@ -21,12 +21,15 @@ namespace BlogPlatform.Domain.Entities
 
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
 
+        public string? CoverImageUrl { get; set; }
+
         private Post() { } // For EF Core
 
-        public Post(string title, string content, Guid authorId)
+        public Post(string title, string content,string coverImageUrl, Guid authorId)
         {
             Title = title;
             Content = content;
+            CoverImageUrl = coverImageUrl;
             AuthorId = authorId;
         }
 

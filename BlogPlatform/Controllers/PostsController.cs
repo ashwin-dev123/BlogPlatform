@@ -37,7 +37,7 @@ namespace BlogPlatform.API.Controllers
             return Ok(post);
         }
 
-        // ✅ Must be logged in
+        // ✅ Must be logged  in
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreatePost(CreatePostDto dto)

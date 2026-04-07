@@ -58,7 +58,7 @@ namespace BlogPlatform.Infrastructure.Services
 
         public async Task<PostDto> CreateAsync(CreatePostDto dto, Guid userId)
         {
-            var post = new Post(dto.Title, dto.Content, userId);
+            var post = new Post(dto.Title, dto.Content,dto.CoverImageUrl, userId);
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
@@ -70,6 +70,7 @@ namespace BlogPlatform.Infrastructure.Services
                 Content = post.Content,
                 AuthorId = post.AuthorId,
                 AuthorUsername = "",
+                CoverImageUrl = dto.CoverImageUrl,
                 CreatedAt = post.CreatedAt
             };
         }
